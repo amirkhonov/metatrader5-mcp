@@ -1,0 +1,58 @@
+# Docker-specific ignores
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+dist
+build
+
+# Virtual environments
+venv
+env
+ENV
+.venv
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs
+*.md
+!README.md
+
+# CI/CD
+.github
+.pre-commit-config.yaml
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Development
+tests
+*.log
+.ruff_cache

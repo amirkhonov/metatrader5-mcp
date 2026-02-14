@@ -1,6 +1,90 @@
 # MetaTrader 5 MCP Server
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
 A Model Context Protocol (MCP) server that provides comprehensive access to MetaTrader 5 trading platform functionality through Python.
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **MetaTrader 5** terminal installed and running on Windows
+- **Python 3.10+**
+
+### Installation (Choose One Method)
+
+#### Method 1: Automated Installation (Recommended)
+
+**Windows:**
+```bash
+# Clone the repository
+git clone https://github.com/amirkhonov/metatrader5-mcp.git
+cd metatrader5-mcp
+
+# Run installation script
+install.bat
+```
+
+**Linux/Mac:**
+```bash
+# Clone the repository
+git clone https://github.com/amirkhonov/metatrader5-mcp.git
+cd metatrader5-mcp
+
+# Run installation script
+chmod +x install.sh
+./install.sh
+```
+
+#### Method 2: Using pip
+
+```bash
+# Install from source
+git clone https://github.com/amirkhonov/metatrader5-mcp.git
+cd metatrader5-mcp
+pip install -r requirements.txt
+pip install -e .
+```
+
+#### Method 3: Using Poetry
+
+```bash
+git clone https://github.com/amirkhonov/metatrader5-mcp.git
+cd metatrader5-mcp
+poetry install
+```
+
+### Configuration
+
+1. **Copy the environment template:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` with your MT5 credentials:**
+   ```env
+   MT5_LOGIN=12345678
+   MT5_PASSWORD=your_password
+   MT5_SERVER=MetaQuotes-Demo
+   MT5_PATH=C:\Program Files\MetaTrader 5\terminal64.exe
+   ```
+
+3. **Run the server:**
+   ```bash
+   # Using environment variables from .env
+   metatrader5-mcp
+   
+   # Or with command line arguments
+   metatrader5-mcp --login 12345 --password secret --server MetaQuotes-Demo
+   ```
+
+### Quick Test
+
+```bash
+# Check if the server starts correctly
+metatrader5-mcp --help
+```
 
 ## Features
 
@@ -36,53 +120,71 @@ This MCP server exposes 32 tools for interacting with MT5, organized into the fo
 
 ## Prerequisites
 
-- **MetaTrader 5** terminal installed and running
+- **MetaTrader 5** terminal installed and running on Windows
 - **Python 3.10+**
-- **MetaTrader5** Python package
-- **MCP SDK** for Python
 
-## Installation
+## Installation Methods
 
-1. Clone or download this repository:
+Choose the method that works best for you:
 
-```bash
-cd c:\Users\desktop\Projects\metatrader5-mcp
+### Option 1: Quick Install Script (Easiest)
+
+**Windows:**
+```cmd
+install.bat
 ```
 
-2. Install dependencies with **Poetry**:
+**Linux/Mac:**
+```bash
+./install.sh
+```
+
+The script will:
+- Check Python version
+- Create a virtual environment
+- Install all dependencies
+- Create a `.env` configuration file
+- Guide you through setup
+
+### Option 2: Manual Installation with pip
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Install the package
+pip install -e .
+
+# Copy environment template
+cp .env.example .env
+# Edit .env with your credentials
+```
+
+### Option 3: Using Poetry
 
 ```bash
 poetry install
+cp .env.example .env
+# Edit .env with your credentials
 ```
 
-This installs the `metatrader5-mcp` console command in the Poetry virtualenv:
-
-```bash
-poetry run metatrader5-mcp
-```
-
-This will create a virtual environment and install `mcp`, `MetaTrader5`, `pydantic`, and dev tools.
-
-3. (Optional) If you prefer `pip`, you can still install directly:
-
-```bash
-pip install mcp MetaTrader5 pydantic
-```
-
-### Install the Console Command
-
-If you want the `metatrader5-mcp` command on your PATH (recommended for MCP clients),
-install the package itself:
-
-```bash
-pip install -e .
-```
-
-Or use `pipx` for a global, isolated install:
+### Option 4: Using pipx (Global Install)
 
 ```bash
 pipx install .
 ```
+
+### Option 5: Docker (Experimental)
+
+```bash
+# Build and run
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+**Note:** Docker support is experimental as MT5 requires Windows. Best for development/testing.
 
 ## Configuration
 
