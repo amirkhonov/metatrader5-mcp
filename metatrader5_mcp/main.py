@@ -31,6 +31,7 @@ from . import tools_connection  # noqa: F401
 from . import tools_market  # noqa: F401
 from . import tools_trading  # noqa: F401
 from . import tools_positions  # noqa: F401
+from . import tools_status  # noqa: F401
 
 
 def load_env_file() -> None:

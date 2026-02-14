@@ -247,6 +247,17 @@ metatrader5-mcp
 
 ## Usage Examples
 
+### Health Check
+
+```
+Use mt5_health_check to verify:
+- MT5 terminal connection status
+- Account login status
+- Trading permissions
+- Connection quality
+Returns comprehensive diagnostic information
+```
+
 ### Initialize Connection
 
 ```
@@ -303,6 +314,21 @@ Use mt5_positions_get to see all open positions, or filter by:
 - symbol: "EURUSD"
 - group: "*EUR*"
 - ticket: specific position number
+```
+
+## Troubleshooting
+
+Having issues? Check our comprehensive [Troubleshooting Guide](TROUBLESHOOTING.md) for:
+- Installation problems
+- Connection issues
+- Authentication errors
+- Trading problems
+- Configuration issues
+- Common error codes and solutions
+
+Or run the validation script:
+```bash
+python validate.py
 ```
 
 ## Constants Reference
