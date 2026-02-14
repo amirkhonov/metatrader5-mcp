@@ -5,6 +5,8 @@
 
 A Model Context Protocol (MCP) server that provides comprehensive access to MetaTrader 5 trading platform functionality through Python.
 
+> **📖 New to this project?** Check out the [Quick Start Guide](QUICKSTART.md) for a condensed reference!
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -390,6 +392,8 @@ The server includes comprehensive error handling:
 3. **Access Control**: Limit access to this MCP server to trusted clients only.
 4. **Network**: MT5 terminal must be running on the same machine as the server.
 
+📖 **For comprehensive security guidance, see [SECURITY.md](SECURITY.md)**
+
 ## Troubleshooting
 
 ### "initialize() failed"
@@ -439,14 +443,33 @@ mt5.shutdown()
 
 ## Resources
 
+### Documentation
+
+- 📖 [Quick Start Guide](QUICKSTART.md) - Quick reference for common tasks
+- 🔧 [Troubleshooting Guide](TROUBLESHOOTING.md) - Solve common issues
+- 🔒 [Security Best Practices](SECURITY.md) - Keep your trading secure
+- 🤝 [Contributing Guide](CONTRIBUTING.md) - How to contribute
+
+### External Links
+
 - [MetaTrader 5 Python Documentation](https://www.mql5.com/en/docs/python_metatrader5)
 - [MCP Protocol Specification](https://modelcontextprotocol.io/)
 - [MetaTrader 5 Terminal](https://www.metatrader5.com/)
+- [GitHub Repository](https://github.com/amirkhonov/metatrader5-mcp)
+- [Issue Tracker](https://github.com/amirkhonov/metatrader5-mcp/issues)
 
 ## License
 
-MIT License - feel free to use and modify as needed.
+MIT License - feel free to use and modify as needed. See [LICENSE](LICENSE) for details.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
+
+---
+
+**⚠️ Disclaimer**: This software is for educational and informational purposes. Trading involves financial risk. Always test with demo accounts first. The authors are not responsible for any financial losses incurred through use of this software.
