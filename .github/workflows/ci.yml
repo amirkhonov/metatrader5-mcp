@@ -13,63 +13,62 @@ permissions:
 jobs:
   lint:
     name: Lint and Format Check
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: read
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install black ruff mypy
         pip install -r requirements.txt
-    
+
     - name: Run Black
       run: black --check .
-    
+
     - name: Run Ruff
       run: ruff check .
-    
+
     - name: Run mypy
       run: mypy metatrader5_mcp --ignore-missing-imports || true
 
   test:
     name: Test on Python ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
         python-version: ['3.10', '3.11', '3.12']
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
         pip install -e .
-    
+
     - name: Verify installation
       run: |
         metatrader5-mcp --help
-    
+
     - name: Run tests (if available)
       run: |
         pytest tests/ -v || echo "No tests found"
@@ -77,30 +76,30 @@ jobs:
 
   build:
     name: Build Package
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: [lint, test]
     permissions:
       contents: read
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
+
     - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip
         pip install build twine
-    
+
     - name: Build package
       run: python -m build
-    
+
     - name: Check package
       run: twine check dist/*
-    
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -109,28 +108,28 @@ jobs:
 
   security:
     name: Security Scan
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: read
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install safety bandit
         pip install -r requirements.txt
-    
+
     - name: Run Safety
       run: safety check --json || true
       continue-on-error: true
-    
+
     - name: Run Bandit
       run: bandit -r metatrader5_mcp -f json || true
       continue-on-error: true
