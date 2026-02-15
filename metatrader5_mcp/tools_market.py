@@ -24,7 +24,7 @@ from .schemas import (
     SymbolSelectParams,
     SymbolsGetParams,
 )
-from .utils import filter_none, mcp, mt5_to_python, parse_datetime
+from .utils import mcp, mt5_to_python, parse_datetime
 
 
 @mcp.tool
