@@ -262,56 +262,6 @@ Or run the validation script:
 python validate.py
 ```
 
-## Constants Reference
-
-### Timeframes (in minutes)
-- `1` - M1 (1 minute)
-- `5` - M5 (5 minutes)
-- `15` - M15 (15 minutes)
-- `30` - M30 (30 minutes)
-- `60` - H1 (1 hour)
-- `240` - H4 (4 hours)
-- `1440` - D1 (1 day)
-- `10080` - W1 (1 week)
-- `43200` - MN1 (1 month)
-
-### Trade Actions
-- `1` - TRADE_ACTION_DEAL (instant execution)
-- `5` - TRADE_ACTION_PENDING (pending order)
-
-### Order Types
-- `0` - ORDER_TYPE_BUY
-- `1` - ORDER_TYPE_SELL
-- `2` - ORDER_TYPE_BUY_LIMIT
-- `3` - ORDER_TYPE_SELL_LIMIT
-- `4` - ORDER_TYPE_BUY_STOP
-- `5` - ORDER_TYPE_SELL_STOP
-
-### Tick Flags
-- `0` - COPY_TICKS_INFO
-- `2` - COPY_TICKS_TRADE
-- `4` - COPY_TICKS_BID
-- `8` - COPY_TICKS_ASK
-- `6` - COPY_TICKS_ALL
-
-### Order Filling Types
-- `0` - ORDER_FILLING_FOK (Fill or Kill)
-- `1` - ORDER_FILLING_IOC (Immediate or Cancel)
-- `2` - ORDER_FILLING_RETURN (Return)
-
-### Order Time Types
-- `0` - ORDER_TIME_GTC (Good Till Cancelled)
-- `1` - ORDER_TIME_DAY (Good Till Day)
-- `2` - ORDER_TIME_SPECIFIED (Good Till Specified)
-- `3` - ORDER_TIME_SPECIFIED_DAY (Good Till Specified Day)
-
-## Error Handling
-
-The server includes comprehensive error handling:
-- MT5 connection errors are reported with error codes
-- Invalid parameters are caught and explained
-- All MT5 API errors include the last error from MT5
-
 ## Security Considerations
 
 ⚠️ **Important Security Notes:**
@@ -401,4 +351,6 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
 
 ---
 
-**⚠️ Disclaimer**: This software is for educational and informational purposes. Trading involves financial risk. Always test with demo accounts first. The authors are not responsible for any financial losses incurred through use of this software.
+**⚠️ Disclaimer**:
+- This software is for educational and informational purposes. Trading involves financial risk. Always test with demo accounts first. The authors are not responsible for any financial losses incurred through use of this software.
+- MetaTrader is a trademark of METAQUOTES LTD. This project is an unofficial Model Context Protocol (MCP) implementation for interacting with MetaTrader 5 and is not affiliated with or endorsed by MetaQuotes.
