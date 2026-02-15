@@ -17,31 +17,31 @@ logger = logging.getLogger("mt5-mcp-server")
 def configure_logging(level: str = "INFO") -> None:
     """
     Configure logging for the application.
-    
+
     Args:
         level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     """
     # Remove any existing handlers
     logger.handlers.clear()
-    
+
     # Set log level
     log_level = getattr(logging, level.upper(), logging.INFO)
     logger.setLevel(log_level)
-    
+
     # Create console handler with formatting
     handler = logging.StreamHandler(sys.stderr)
     handler.setLevel(log_level)
-    
+
     # Create formatter
     formatter = logging.Formatter(
-        fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
     handler.setFormatter(formatter)
-    
+
     # Add handler to logger
     logger.addHandler(handler)
-    
+
     # Prevent propagation to root logger
     logger.propagate = False
 

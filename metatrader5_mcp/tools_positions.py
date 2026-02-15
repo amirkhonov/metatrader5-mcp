@@ -10,7 +10,6 @@ from typing import Any
 import MetaTrader5 as mt5
 
 from .logger import logger
-from .utils import mcp, parse_datetime, mt5_to_python, filter_none
 from .schemas import (
     HistoryDealsGetParams,
     HistoryDealsTotalParams,
@@ -19,6 +18,7 @@ from .schemas import (
     OrdersGetParams,
     PositionsGetParams,
 )
+from .utils import filter_none, mcp, mt5_to_python, parse_datetime
 
 
 @mcp.tool

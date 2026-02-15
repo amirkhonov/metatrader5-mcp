@@ -43,7 +43,7 @@ This document outlines security best practices when using MetaTrader5-MCP.
    # ❌ NEVER DO THIS
    login = 12345
    password = "secret"
-   
+
    # ✓ DO THIS
    login = os.getenv("MT5_LOGIN")
    password = os.getenv("MT5_PASSWORD")
@@ -63,7 +63,7 @@ This document outlines security best practices when using MetaTrader5-MCP.
    ```bash
    # Restrict .env file permissions
    chmod 600 .env
-   
+
    # Only user can read/write
    ls -l .env
    # -rw------- 1 user user 123 date .env
@@ -140,7 +140,7 @@ When using Docker:
    ```dockerfile
    # ❌ NEVER DO THIS
    ENV MT5_PASSWORD=secret
-   
+
    # ✓ DO THIS
    # Use runtime environment variables
    ```
@@ -207,7 +207,7 @@ logger.info(f"Login attempt for account: {login}")
 
 # ✓ GOOD (masking in code)
 safe_kwargs = {
-    k: v if k != "password" else "***" 
+    k: v if k != "password" else "***"
     for k, v in kwargs.items()
 }
 logger.info(f"Login with: {safe_kwargs}")

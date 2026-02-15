@@ -23,12 +23,12 @@ By participating in this project, you agree to maintain a respectful and inclusi
    ```
 
 2. **Install dependencies:**
-   
+
    Using Poetry (recommended):
    ```bash
    poetry install
    ```
-   
+
    Or using pip:
    ```bash
    pip install -r requirements-dev.txt
@@ -131,14 +131,14 @@ Example:
 def mt5_get_symbol_info(symbol: str) -> dict[str, Any]:
     """
     Get information about a trading symbol.
-    
+
     Args:
         symbol: The trading symbol (e.g., "EURUSD").
-        
+
     Returns:
         Dictionary containing symbol information including spread,
         digits, tick size, etc.
-        
+
     Raises:
         ValueError: If symbol is empty or invalid.
         RuntimeError: If MT5 is not initialized.

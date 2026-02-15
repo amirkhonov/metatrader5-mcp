@@ -344,7 +344,7 @@ MT5_LOGIN = 12345  # ✗ Wrong
    # Ensure metatrader5-mcp is in PATH
    which metatrader5-mcp  # Unix
    where metatrader5-mcp  # Windows
-   
+
    # If not found, use full path
    "command": "C:\\Users\\YourUser\\venv\\Scripts\\metatrader5-mcp.exe"
    ```

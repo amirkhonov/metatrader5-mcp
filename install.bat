@@ -42,7 +42,7 @@ if "%USE_POETRY%"=="false" (
     ) else (
         echo √ Virtual environment already exists
     )
-    
+
     REM Activate virtual environment
     call venv\Scripts\activate.bat
     echo √ Virtual environment activated

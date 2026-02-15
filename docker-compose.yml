@@ -7,31 +7,31 @@ services:
       dockerfile: Dockerfile
     image: metatrader5-mcp:latest
     container_name: metatrader5-mcp
-    
+
     # Environment variables (use .env file)
     env_file:
       - .env
-    
+
     # Alternative: specify environment variables directly
     # environment:
     #   - MT5_LOGIN=${MT5_LOGIN}
     #   - MT5_PASSWORD=${MT5_PASSWORD}
     #   - MT5_SERVER=${MT5_SERVER}
     #   - LOG_LEVEL=INFO
-    
+
     # Command line arguments (optional)
     # command: ["--login", "12345", "--password", "secret", "--server", "MetaQuotes-Demo"]
-    
+
     # Restart policy
     restart: unless-stopped
-    
+
     # Logging
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    
+
     # Network (if needed)
     # networks:
     #   - mcp-network

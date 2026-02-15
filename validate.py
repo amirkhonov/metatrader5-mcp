@@ -4,9 +4,9 @@ Validation script to check prerequisites for MetaTrader5-MCP.
 Run this before installing to ensure your system is ready.
 """
 
-import sys
 import platform
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -14,7 +14,7 @@ def print_header(text: str) -> None:
     """Print a section header."""
     print(f"\n{'=' * 60}")
     print(f"  {text}")
-    print('=' * 60)
+    print("=" * 60)
 
 
 def print_success(text: str) -> None:
@@ -35,11 +35,11 @@ def print_warning(text: str) -> None:
 def check_python_version() -> bool:
     """Check if Python version is 3.10+."""
     print_header("Checking Python Version")
-    
+
     version = sys.version_info
     version_str = f"{version.major}.{version.minor}.{version.micro}"
     print(f"Python version: {version_str}")
-    
+
     if version.major == 3 and version.minor >= 10:
         print_success(f"Python {version_str} is supported")
         return True
@@ -53,10 +53,10 @@ def check_python_version() -> bool:
 def check_operating_system() -> bool:
     """Check if running on Windows (required for MT5)."""
     print_header("Checking Operating System")
-    
+
     os_name = platform.system()
     print(f"Operating System: {os_name}")
-    
+
     if os_name == "Windows":
         print_success("Windows detected - MT5 is supported")
         return True
@@ -70,13 +70,13 @@ def check_operating_system() -> bool:
 def check_pip() -> bool:
     """Check if pip is available."""
     print_header("Checking pip")
-    
+
     try:
         result = subprocess.run(
             [sys.executable, "-m", "pip", "--version"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         print(result.stdout.strip())
         print_success("pip is available")
@@ -90,23 +90,23 @@ def check_pip() -> bool:
 def check_mt5_terminal() -> bool:
     """Check if MT5 terminal is installed (Windows only)."""
     print_header("Checking MetaTrader 5 Terminal")
-    
+
     if platform.system() != "Windows":
         print_warning("Skipping MT5 check (not on Windows)")
         return True
-    
+
     # Common MT5 installation paths
     possible_paths = [
         Path("C:/Program Files/MetaTrader 5/terminal64.exe"),
         Path("C:/Program Files (x86)/MetaTrader 5/terminal64.exe"),
         Path.home() / "AppData/Roaming/MetaQuotes/Terminal/MetaTrader 5/terminal64.exe",
     ]
-    
+
     for path in possible_paths:
         if path.exists():
             print_success(f"MT5 found at: {path}")
             return True
-    
+
     print_warning("MT5 terminal not found in common locations")
     print("  If MT5 is installed elsewhere, you can specify the path with --path")
     print("  Download MT5 from: https://www.metatrader5.com/")
@@ -116,9 +116,10 @@ def check_mt5_terminal() -> bool:
 def check_venv() -> bool:
     """Check if venv module is available."""
     print_header("Checking Virtual Environment Support")
-    
+
     try:
         import venv  # noqa: F401
+
         print_success("venv module is available")
         return True
     except ImportError:
@@ -130,13 +131,10 @@ def check_venv() -> bool:
 def check_git() -> bool:
     """Check if git is available."""
     print_header("Checking Git")
-    
+
     try:
         result = subprocess.run(
-            ["git", "--version"],
-            capture_output=True,
-            text=True,
-            check=True
+            ["git", "--version"], capture_output=True, text=True, check=True
         )
         print(result.stdout.strip())
         print_success("Git is available")
@@ -151,13 +149,13 @@ def check_git() -> bool:
 def check_dependencies() -> bool:
     """Check if required Python packages can be installed."""
     print_header("Checking Package Dependencies")
-    
+
     required_packages = ["fastmcp", "mcp", "MetaTrader5", "pydantic"]
-    
+
     print("Required packages:")
     for package in required_packages:
         print(f"  - {package}")
-    
+
     print_success("Dependencies will be installed during setup")
     return True
 
@@ -167,7 +165,7 @@ def main() -> int:
     print("\n" + "=" * 60)
     print("  MetaTrader5-MCP Prerequisites Validation")
     print("=" * 60)
-    
+
     checks = [
         ("Python Version", check_python_version, True),
         ("Operating System", check_operating_system, False),
@@ -177,10 +175,10 @@ def main() -> int:
         ("MT5 Terminal", check_mt5_terminal, False),
         ("Dependencies", check_dependencies, False),
     ]
-    
+
     results = []
     critical_failed = False
-    
+
     for name, check_func, is_critical in checks:
         try:
             result = check_func()
@@ -192,17 +190,17 @@ def main() -> int:
             results.append((name, False, is_critical))
             if is_critical:
                 critical_failed = True
-    
+
     # Print summary
     print_header("Validation Summary")
-    
+
     for name, result, is_critical in results:
         status = "✓ PASS" if result else ("✗ FAIL" if is_critical else "⚠ WARN")
         critical_marker = " (CRITICAL)" if is_critical and not result else ""
         print(f"  {status}: {name}{critical_marker}")
-    
+
     print("\n" + "=" * 60)
-    
+
     if critical_failed:
         print("✗ Some critical checks failed. Please resolve them before installing.")
         print("\nNext steps:")

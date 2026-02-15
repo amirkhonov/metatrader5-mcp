@@ -23,15 +23,14 @@ import os
 import sys
 from typing import Optional
 
-from .logger import logger, configure_logging
-from .utils import mcp
-
 # Import tool modules so their @mcp.tool decorators register with the app.
 from . import tools_connection  # noqa: F401
 from . import tools_market  # noqa: F401
-from . import tools_trading  # noqa: F401
 from . import tools_positions  # noqa: F401
 from . import tools_status  # noqa: F401
+from . import tools_trading  # noqa: F401
+from .logger import configure_logging, logger
+from .utils import mcp
 
 
 def load_env_file() -> None:
@@ -39,7 +38,7 @@ def load_env_file() -> None:
     env_file = os.path.join(os.getcwd(), ".env")
     if not os.path.exists(env_file):
         return
-    
+
     try:
         with open(env_file, "r") as f:
             for line in f:
@@ -67,7 +66,7 @@ Environment variables can be used as fallbacks:
 
 Example:
   metatrader5-mcp --login 12345 --password secret --server MetaQuotes-Demo
-  
+
 Or with environment variables:
   export MT5_LOGIN=12345
   export MT5_PASSWORD=secret
@@ -115,13 +114,13 @@ def main(args: Optional[list[str]] = None) -> None:
     """Run the FastMCP server over stdio with optional auto-initialization."""
     # Load .env file if it exists
     load_env_file()
-    
+
     # Parse arguments
     parsed = parse_args(args)
-    
+
     # Configure logging
     configure_logging(parsed.log_level)
-    
+
     logger.info("MetaTrader 5 MCP Server v0.1.0")
     logger.info("Starting server with log level: %s", parsed.log_level)
 

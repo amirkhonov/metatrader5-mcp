@@ -76,7 +76,7 @@ poetry install
    ```bash
    # Using environment variables from .env
    metatrader5-mcp
-   
+
    # Or with command line arguments
    metatrader5-mcp --login 12345 --password secret --server MetaQuotes-Demo
    ```

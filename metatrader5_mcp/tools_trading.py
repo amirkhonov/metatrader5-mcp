@@ -14,13 +14,13 @@ from typing import Any
 import MetaTrader5 as mt5
 
 from .logger import logger
-from .utils import mcp, mt5_to_python, filter_none
 from .schemas import (
     OrderCalcMarginParams,
     OrderCalcProfitParams,
     OrderCheckParams,
     OrderSendParams,
 )
+from .utils import filter_none, mcp, mt5_to_python
 
 
 @mcp.tool
