@@ -1,4 +1,4 @@
 """MetaTrader 5 MCP Server package."""
 
-from .utils import mcp
-from .main import main
+from .main import main as main
+from .utils import mcp as mcp

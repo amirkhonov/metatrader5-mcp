@@ -1,6 +1,92 @@
 # MetaTrader 5 MCP Server
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
 A Model Context Protocol (MCP) server that provides comprehensive access to MetaTrader 5 trading platform functionality through Python.
+
+> **📖 New to this project?** Check out the [Quick Start Guide](QUICKSTART.md) for a condensed reference!
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **MetaTrader 5** terminal installed and running on Windows
+- **Python 3.10+**
+
+### Installation (Choose One Method)
+
+#### Method 1: Automated Installation (Recommended)
+
+**Windows:**
+```bash
+# Clone the repository
+git clone https://github.com/amirkhonov/metatrader5-mcp.git
+cd metatrader5-mcp
+
+# Run installation script
+install.bat
+```
+
+**Linux/Mac:**
+```bash
+# Clone the repository
+git clone https://github.com/amirkhonov/metatrader5-mcp.git
+cd metatrader5-mcp
+
+# Run installation script
+chmod +x install.sh
+./install.sh
+```
+
+#### Method 2: Using pip
+
+```bash
+# Install from source
+git clone https://github.com/amirkhonov/metatrader5-mcp.git
+cd metatrader5-mcp
+pip install -r requirements.txt
+pip install -e .
+```
+
+#### Method 3: Using Poetry
+
+```bash
+git clone https://github.com/amirkhonov/metatrader5-mcp.git
+cd metatrader5-mcp
+poetry install
+```
+
+### Configuration
+
+1. **Copy the environment template:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` with your MT5 credentials:**
+   ```env
+   MT5_LOGIN=12345678
+   MT5_PASSWORD=your_password
+   MT5_SERVER=MetaQuotes-Demo
+   MT5_PATH=C:\Program Files\MetaTrader 5\terminal64.exe
+   ```
+
+3. **Run the server:**
+   ```bash
+   # Using environment variables from .env
+   metatrader5-mcp
+
+   # Or with command line arguments
+   metatrader5-mcp --login 12345 --password secret --server MetaQuotes-Demo
+   ```
+
+### Quick Test
+
+```bash
+# Check if the server starts correctly
+metatrader5-mcp --help
+```
 
 ## Features
 
@@ -36,53 +122,71 @@ This MCP server exposes 32 tools for interacting with MT5, organized into the fo
 
 ## Prerequisites
 
-- **MetaTrader 5** terminal installed and running
+- **MetaTrader 5** terminal installed and running on Windows
 - **Python 3.10+**
-- **MetaTrader5** Python package
-- **MCP SDK** for Python
 
-## Installation
+## Installation Methods
 
-1. Clone or download this repository:
+Choose the method that works best for you:
 
-```bash
-cd c:\Users\desktop\Projects\metatrader5-mcp
+### Option 1: Quick Install Script (Easiest)
+
+**Windows:**
+```cmd
+install.bat
 ```
 
-2. Install dependencies with **Poetry**:
+**Linux/Mac:**
+```bash
+./install.sh
+```
+
+The script will:
+- Check Python version
+- Create a virtual environment
+- Install all dependencies
+- Create a `.env` configuration file
+- Guide you through setup
+
+### Option 2: Manual Installation with pip
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Install the package
+pip install -e .
+
+# Copy environment template
+cp .env.example .env
+# Edit .env with your credentials
+```
+
+### Option 3: Using Poetry
 
 ```bash
 poetry install
+cp .env.example .env
+# Edit .env with your credentials
 ```
 
-This installs the `metatrader5-mcp` console command in the Poetry virtualenv:
-
-```bash
-poetry run metatrader5-mcp
-```
-
-This will create a virtual environment and install `mcp`, `MetaTrader5`, `pydantic`, and dev tools.
-
-3. (Optional) If you prefer `pip`, you can still install directly:
-
-```bash
-pip install mcp MetaTrader5 pydantic
-```
-
-### Install the Console Command
-
-If you want the `metatrader5-mcp` command on your PATH (recommended for MCP clients),
-install the package itself:
-
-```bash
-pip install -e .
-```
-
-Or use `pipx` for a global, isolated install:
+### Option 4: Using pipx (Global Install)
 
 ```bash
 pipx install .
 ```
+
+### Option 5: Docker (Experimental)
+
+```bash
+# Build and run
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+**Note:** Docker support is experimental as MT5 requires Windows. Best for development/testing.
 
 ## Configuration
 
@@ -110,20 +214,6 @@ Add this configuration to your Claude Desktop config file:
 }
 ```
 
-#### Manual Initialization
-
-```json
-{
-  "mcpServers": {
-    "metatrader": {
-      "command": "metatrader5-mcp"
-    }
-  }
-}
-```
-
-Then use the `mt5_initialize` tool to connect manually.
-
 ### Command Line Arguments
 
 The server supports the following optional arguments:
@@ -143,115 +233,20 @@ metatrader5-mcp --login 12345 --password secret --server MetaQuotes-Demo
 metatrader5-mcp
 ```
 
-## Usage Examples
+## Troubleshooting
 
-### Initialize Connection
+Having issues? Check our comprehensive [Troubleshooting Guide](TROUBLESHOOTING.md) for:
+- Installation problems
+- Connection issues
+- Authentication errors
+- Trading problems
+- Configuration issues
+- Common error codes and solutions
 
+Or run the validation script:
+```bash
+python validate.py
 ```
-Use the mt5_initialize tool to connect to MT5 terminal.
-```
-
-### Get Account Information
-
-```
-Use mt5_account_info to retrieve:
-- Balance
-- Equity
-- Margin (used and free)
-- Profit
-- Leverage
-```
-
-### Get Current Price
-
-```
-Use mt5_symbol_info_tick with symbol "EURUSD" to get:
-- Current bid/ask prices
-- Last trade price
-- Volume
-```
-
-### Retrieve Historical Data
-
-```
-Use mt5_copy_rates_from with:
-- symbol: "EURUSD"
-- timeframe: 60 (H1)
-- date_from: "2024-01-01"
-- count: 100
-
-Returns OHLCV data for the last 100 H1 bars.
-```
-
-### Check Order Before Sending
-
-```
-Use mt5_order_check to validate an order:
-- action: 1 (TRADE_ACTION_DEAL)
-- symbol: "EURUSD"
-- volume: 0.1
-- type: 0 (BUY)
-- price: <current ask price>
-```
-
-### View Open Positions
-
-```
-Use mt5_positions_get to see all open positions, or filter by:
-- symbol: "EURUSD"
-- group: "*EUR*"
-- ticket: specific position number
-```
-
-## Constants Reference
-
-### Timeframes (in minutes)
-- `1` - M1 (1 minute)
-- `5` - M5 (5 minutes)
-- `15` - M15 (15 minutes)
-- `30` - M30 (30 minutes)
-- `60` - H1 (1 hour)
-- `240` - H4 (4 hours)
-- `1440` - D1 (1 day)
-- `10080` - W1 (1 week)
-- `43200` - MN1 (1 month)
-
-### Trade Actions
-- `1` - TRADE_ACTION_DEAL (instant execution)
-- `5` - TRADE_ACTION_PENDING (pending order)
-
-### Order Types
-- `0` - ORDER_TYPE_BUY
-- `1` - ORDER_TYPE_SELL
-- `2` - ORDER_TYPE_BUY_LIMIT
-- `3` - ORDER_TYPE_SELL_LIMIT
-- `4` - ORDER_TYPE_BUY_STOP
-- `5` - ORDER_TYPE_SELL_STOP
-
-### Tick Flags
-- `0` - COPY_TICKS_INFO
-- `2` - COPY_TICKS_TRADE
-- `4` - COPY_TICKS_BID
-- `8` - COPY_TICKS_ASK
-- `6` - COPY_TICKS_ALL
-
-### Order Filling Types
-- `0` - ORDER_FILLING_FOK (Fill or Kill)
-- `1` - ORDER_FILLING_IOC (Immediate or Cancel)
-- `2` - ORDER_FILLING_RETURN (Return)
-
-### Order Time Types
-- `0` - ORDER_TIME_GTC (Good Till Cancelled)
-- `1` - ORDER_TIME_DAY (Good Till Day)
-- `2` - ORDER_TIME_SPECIFIED (Good Till Specified)
-- `3` - ORDER_TIME_SPECIFIED_DAY (Good Till Specified Day)
-
-## Error Handling
-
-The server includes comprehensive error handling:
-- MT5 connection errors are reported with error codes
-- Invalid parameters are caught and explained
-- All MT5 API errors include the last error from MT5
 
 ## Security Considerations
 
@@ -261,6 +256,8 @@ The server includes comprehensive error handling:
 2. **Credentials**: Never hardcode passwords. Use environment variables or secure credential storage.
 3. **Access Control**: Limit access to this MCP server to trusted clients only.
 4. **Network**: MT5 terminal must be running on the same machine as the server.
+
+📖 **For comprehensive security guidance, see [SECURITY.md](SECURITY.md)**
 
 ## Troubleshooting
 
@@ -275,7 +272,6 @@ The server includes comprehensive error handling:
 - Check date ranges for historical data
 
 ### Connection timeout
-- Increase timeout parameter in `mt5_initialize`
 - Check MT5 terminal is responsive
 - Verify no firewall blocking
 
@@ -311,14 +307,35 @@ mt5.shutdown()
 
 ## Resources
 
+### Documentation
+
+- 📖 [Quick Start Guide](QUICKSTART.md) - Quick reference for common tasks
+- 🔧 [Troubleshooting Guide](TROUBLESHOOTING.md) - Solve common issues
+- 🔒 [Security Best Practices](SECURITY.md) - Keep your trading secure
+- 🤝 [Contributing Guide](CONTRIBUTING.md) - How to contribute
+
+### External Links
+
 - [MetaTrader 5 Python Documentation](https://www.mql5.com/en/docs/python_metatrader5)
 - [MCP Protocol Specification](https://modelcontextprotocol.io/)
 - [MetaTrader 5 Terminal](https://www.metatrader5.com/)
+- [GitHub Repository](https://github.com/amirkhonov/metatrader5-mcp)
+- [Issue Tracker](https://github.com/amirkhonov/metatrader5-mcp/issues)
 
 ## License
 
-MIT License - feel free to use and modify as needed.
+MIT License - feel free to use and modify as needed. See [LICENSE](LICENSE) for details.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
+
+---
+
+**⚠️ Disclaimer**:
+- This software is for educational and informational purposes. Trading involves financial risk. Always test with demo accounts first. The authors are not responsible for any financial losses incurred through use of this software.
+- MetaTrader is a trademark of METAQUOTES LTD. This project is an unofficial Model Context Protocol (MCP) implementation for interacting with MetaTrader 5 and is not affiliated with or endorsed by MetaQuotes.

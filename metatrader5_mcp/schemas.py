@@ -18,39 +18,20 @@ class ParamsBase(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-# Connection & Initialization -------------------------------------------------
-
-
-class InitializeParams(ParamsBase):
-    path: Optional[str] = Field(
-        default=None, description="Path to MT5 terminal executable"
-    )
-    login: Optional[int] = Field(default=None, description="Trading account number")
-    password: Optional[str] = Field(
-        default=None, description="Trading account password"
-    )
-    server: Optional[str] = Field(default=None, description="Trading server name")
-    timeout: Optional[int] = Field(
-        default=None, description="Connection timeout in milliseconds"
-    )
-    portable: Optional[bool] = Field(
-        default=None, description="Portable mode flag for terminal"
-    )
-
-
-class LoginParams(ParamsBase):
-    login: int = Field(description="Trading account number")
-    password: str = Field(description="Trading account password")
-    server: str = Field(description="Trading server name")
-
-
 # Market Data - Symbols -------------------------------------------------------
 
 
 class SymbolsGetParams(ParamsBase):
     group: Optional[str] = Field(
         default=None,
-        description="Symbol group filter pattern, e.g. '*EUR*' or 'FOREX\\\\*'",
+        description=(
+            "Optional symbol group filter. Supports wildcards ('*'), comma-separated "
+            "conditions, and negation ('!'). Conditions are evaluated left-to-right, "
+            "so inclusion patterns must come before exclusion patterns. "
+            "Examples: '*EUR*' (symbols containing EUR), "
+            "'*,!*USD*,!*EUR*' (all except USD/EUR), "
+            "'FOREX*,!*USD*' (FOREX symbols without USD)."
+        ),
     )
 
 
@@ -134,23 +115,48 @@ class CopyTicksRangeParams(ParamsBase):
 
 class OrderSendParams(ParamsBase):
     action: int = Field(
-        description="Trade action type, e.g. 1=TRADE_ACTION_DEAL, 5=TRADE_ACTION_PENDING"
-    )
-    symbol: str = Field(description="Symbol name")
-    volume: float = Field(description="Trade volume in lots")
-    type: int = Field(
         description=(
-            "Order type: 0=BUY, 1=SELL, 2=BUY_LIMIT, 3=SELL_LIMIT, "
-            "4=BUY_STOP, 5=SELL_STOP"
+            "Trade action type: 1=TRADE_ACTION_DEAL (market order), "
+            "5=TRADE_ACTION_PENDING (pending order), "
+            "6=TRADE_ACTION_SLTP (modify SL/TP of open position), "
+            "7=TRADE_ACTION_MODIFY (modify pending order), "
+            "8=TRADE_ACTION_REMOVE (delete pending order), "
+            "10=TRADE_ACTION_CLOSE_BY (close by opposite position)"
         )
     )
+    symbol: Optional[str] = Field(
+        default=None,
+        description="Symbol name - not required for TRADE_ACTION_MODIFY or TRADE_ACTION_CLOSE_BY",
+    )
+    volume: Optional[float] = Field(default=None, description="Trade volume in lots")
+    type: Optional[int] = Field(
+        default=None,
+        description=(
+            "Order type: 0=BUY, 1=SELL, 2=BUY_LIMIT, 3=SELL_LIMIT, "
+            "4=BUY_STOP, 5=SELL_STOP, 6=BUY_STOP_LIMIT, 7=SELL_STOP_LIMIT, "
+            "8=CLOSE_BY"
+        ),
+    )
     price: Optional[float] = Field(
-        default=None, description="Order price (required for pending orders)"
+        default=None,
+        description=(
+            "Order price. Required for pending orders. For market orders on "
+            "Market/Exchange execution symbols, pass the current ask (BUY) or bid (SELL)."
+        ),
+    )
+    stoplimit: Optional[float] = Field(
+        default=None,
+        description=(
+            "StopLimit price - only for ORDER_TYPE_BUY_STOP_LIMIT / "
+            "ORDER_TYPE_SELL_STOP_LIMIT. The limit order is placed at this price "
+            "once the market reaches `price`."
+        ),
     )
     sl: Optional[float] = Field(default=None, description="Stop Loss price")
     tp: Optional[float] = Field(default=None, description="Take Profit price")
     deviation: Optional[int] = Field(
-        default=None, description="Maximum price deviation in points"
+        default=None,
+        description="Maximum price deviation in points (for market orders)",
     )
     magic: Optional[int] = Field(
         default=None, description="Expert Advisor ID (magic number)"
@@ -158,29 +164,70 @@ class OrderSendParams(ParamsBase):
     comment: Optional[str] = Field(default=None, description="Order comment")
     type_time: Optional[int] = Field(
         default=None,
-        description=("Order lifetime type: 0=GTC, 1=DAY, 2=SPECIFIED, 3=SPECIFIED_DAY"),
+        description="Order expiration type: 0=GTC, 1=DAY, 2=SPECIFIED (use with expiration), 3=SPECIFIED_DAY",
     )
     type_filling: Optional[int] = Field(
         default=None,
-        description="Order filling type: 0=FOK, 1=IOC, 2=RETURN",
+        description="Order filling policy: 0=FOK (Fill or Kill), 1=IOC (Immediate or Cancel), 2=RETURN",
     )
-
-
-class OrderCheckParams(ParamsBase):
-    action: int = Field(
-        description="Trade action type, e.g. 1=TRADE_ACTION_DEAL, 5=TRADE_ACTION_PENDING"
-    )
-    symbol: str = Field(description="Symbol name")
-    volume: float = Field(description="Trade volume in lots")
-    type: int = Field(
+    expiration: Optional[int] = Field(
+        default=None,
         description=(
-            "Order type: 0=BUY, 1=SELL, 2=BUY_LIMIT, 3=SELL_LIMIT, "
-            "4=BUY_STOP, 5=SELL_STOP"
-        )
+            "Pending order expiration as a Unix timestamp. "
+            "Only used when type_time=2 (ORDER_TIME_SPECIFIED)."
+        ),
     )
-    price: Optional[float] = Field(
-        default=None, description="Order price (required for pending orders)"
+    order: Optional[int] = Field(
+        default=None,
+        description=(
+            "Ticket of an existing pending order. "
+            "Required for TRADE_ACTION_MODIFY and TRADE_ACTION_REMOVE."
+        ),
     )
+    position: Optional[int] = Field(
+        default=None,
+        description=(
+            "Ticket of an open position. "
+            "Required for TRADE_ACTION_SLTP and TRADE_ACTION_CLOSE_BY."
+        ),
+    )
+    position_by: Optional[int] = Field(
+        default=None,
+        description=(
+            "Ticket of the opposite position used for close-by. "
+            "Required for TRADE_ACTION_CLOSE_BY."
+        ),
+    )
+
+
+class OrderCheckParams(OrderSendParams):
+    """
+    Parameters for mt5_order_check().
+
+    order_check() accepts the same MqlTradeRequest structure as order_send(),
+    so this class inherits all fields from OrderSendParams unchanged.
+    All fields that are optional in OrderSendParams remain optional here.
+
+    Full field reference (from MqlTradeRequest):
+      action       - TRADE_ACTION_DEAL=1, PENDING=5, SLTP=6, MODIFY=7, REMOVE=8, CLOSE_BY=10
+      symbol       - Symbol name
+      volume       - Trade volume in lots
+      type         - Order type: BUY=0, SELL=1, BUY_LIMIT=2, SELL_LIMIT=3, BUY_STOP=4,
+                     SELL_STOP=5, BUY_STOP_LIMIT=6, SELL_STOP_LIMIT=7, CLOSE_BY=8
+      price        - Order price
+      stoplimit    - StopLimit price (BUY_STOP_LIMIT / SELL_STOP_LIMIT only)
+      sl           - Stop Loss
+      tp           - Take Profit
+      deviation    - Max price deviation in points
+      magic        - Expert Advisor ID
+      comment      - Order comment
+      type_time    - Expiration: 0=GTC, 1=DAY, 2=SPECIFIED, 3=SPECIFIED_DAY
+      type_filling - Filling: 0=FOK, 1=IOC, 2=RETURN
+      expiration   - Unix timestamp expiry (ORDER_TIME_SPECIFIED only)
+      order        - Ticket of existing order (MODIFY / REMOVE)
+      position     - Open position ticket (SLTP / CLOSE_BY)
+      position_by  - Opposite position ticket (CLOSE_BY)
+    """
 
 
 class OrderCalcMarginParams(ParamsBase):
@@ -207,10 +254,15 @@ class OrderCalcProfitParams(ParamsBase):
 
 class PositionsGetParams(ParamsBase):
     symbol: Optional[str] = Field(
-        default=None, description="Symbol name filter for positions"
+        default=None, description="Symbol name filter; if provided, ticket is ignored"
     )
     group: Optional[str] = Field(
-        default=None, description="Symbol group filter pattern"
+        default=None,
+        description=(
+            "Symbol group filter. Supports wildcards ('*'), comma-separated conditions, "
+            "and negation ('!'). Applied left-to-right (inclusions before exclusions). "
+            "Examples: '*EUR*' (EUR pairs), '*,!*USD*' (all except USD pairs)."
+        ),
     )
     ticket: Optional[int] = Field(
         default=None, description="Specific position ticket number"
@@ -219,13 +271,20 @@ class PositionsGetParams(ParamsBase):
 
 class OrdersGetParams(ParamsBase):
     symbol: Optional[str] = Field(
-        default=None, description="Symbol name filter for orders"
+        default=None,
+        description="Symbol name filter; if provided, ticket is ignored",
     )
     group: Optional[str] = Field(
-        default=None, description="Symbol group filter pattern"
+        default=None,
+        description=(
+            "Symbol group filter. Supports wildcards ('*'), comma-separated conditions, "
+            "and negation ('!'). Applied left-to-right (inclusions before exclusions). "
+            "Examples: '*GBP*' (GBP pairs), '*, !*EUR*' (all except EUR pairs)."
+        ),
     )
     ticket: Optional[int] = Field(
-        default=None, description="Specific order ticket number"
+        default=None,
+        description="Specific order ticket number; ignored if symbol is set",
     )
 
 
@@ -240,13 +299,20 @@ class HistoryOrdersTotalParams(HistoryRangeParams):
 
 class HistoryOrdersGetParams(ParamsBase):
     date_from: Optional[str] = Field(
-        default=None, description="Start date for history range"
+        default=None,
+        description="Start date for history range (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS, UTC)",
     )
     date_to: Optional[str] = Field(
-        default=None, description="End date for history range"
+        default=None,
+        description="End date for history range (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS, UTC)",
     )
     group: Optional[str] = Field(
-        default=None, description="Symbol group filter pattern"
+        default=None,
+        description=(
+            "Symbol group filter. Supports wildcards ('*'), comma-separated conditions, "
+            "and negation ('!'). Applied left-to-right (inclusions before exclusions). "
+            "Can be combined with date_from/date_to."
+        ),
     )
     ticket: Optional[int] = Field(
         default=None, description="Order ticket number to filter by"
@@ -262,13 +328,20 @@ class HistoryDealsTotalParams(HistoryRangeParams):
 
 class HistoryDealsGetParams(ParamsBase):
     date_from: Optional[str] = Field(
-        default=None, description="Start date for history range"
+        default=None,
+        description="Start date for history range (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS, UTC)",
     )
     date_to: Optional[str] = Field(
-        default=None, description="End date for history range"
+        default=None,
+        description="End date for history range (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS, UTC)",
     )
     group: Optional[str] = Field(
-        default=None, description="Symbol group filter pattern"
+        default=None,
+        description=(
+            "Symbol group filter. Supports wildcards ('*'), comma-separated conditions, "
+            "and negation ('!'). Applied left-to-right (inclusions before exclusions). "
+            "Can be combined with date_from/date_to."
+        ),
     )
     ticket: Optional[int] = Field(
         default=None, description="Deal ticket number to filter by"

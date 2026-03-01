@@ -16,7 +16,6 @@ from typing import Any
 
 from fastmcp import FastMCP
 
-
 # ---------------------------------------------------------------------------
 # Shared FastMCP app
 # ---------------------------------------------------------------------------
@@ -52,6 +51,7 @@ def mt5_to_python(data: Any) -> Any:
     Convert MetaTrader5 return types into JSON-serializable Python structures.
 
     - Named tuples -> dict
+    - Numpy structured arrays (copy_rates_*, copy_ticks_*) -> list[dict]
     - Lists/tuples of named tuples -> list[dict]
     - Other lists/tuples -> list
     - None -> None
@@ -62,6 +62,19 @@ def mt5_to_python(data: Any) -> Any:
     if hasattr(data, "_asdict"):
         # Convert named tuple to dict
         return data._asdict()
+
+    # Handle numpy structured arrays returned by copy_rates_* and copy_ticks_*
+    type_name = type(data).__name__
+    if type_name == "ndarray":
+        if data.size == 0:
+            return []
+        if data.dtype.names:
+            # Structured array: convert each row to a plain dict
+            return [
+                {name: row[name].item() for name in data.dtype.names} for row in data
+            ]
+        # Plain numpy array: convert to Python list
+        return data.tolist()
 
     if isinstance(data, (list, tuple)):
         if not data:

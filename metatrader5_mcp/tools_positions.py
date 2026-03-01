@@ -10,7 +10,6 @@ from typing import Any
 import MetaTrader5 as mt5
 
 from .logger import logger
-from .utils import mcp, parse_datetime, mt5_to_python, filter_none
 from .schemas import (
     HistoryDealsGetParams,
     HistoryDealsTotalParams,
@@ -19,6 +18,7 @@ from .schemas import (
     OrdersGetParams,
     PositionsGetParams,
 )
+from .utils import filter_none, mcp, mt5_to_python, parse_datetime
 
 
 @mcp.tool
@@ -31,9 +31,17 @@ def mt5_positions_total() -> int:
 @mcp.tool
 def mt5_positions_get(params: PositionsGetParams) -> Any:
     """
-    Get open positions.
+    Get open positions, optionally filtered by symbol, group pattern, or ticket.
 
-    Can filter by symbol, group pattern, or ticket number.
+    Only one filter is used at a time; if `symbol` is provided it takes precedence
+    over `ticket`. If `group` is provided, only positions whose symbol names match
+    the pattern are returned.
+
+    The `group` filter supports wildcards ('*'), comma-separated conditions, and
+    negation ('!'). Conditions are applied left-to-right (inclusions before exclusions).
+    Examples:
+        group='*EUR*'           → positions on EUR pairs
+        group='*,!*USD*'        → all positions except USD pairs
     """
     kwargs = filter_none(params.model_dump())
     logger.info("mt5_positions_get called with %s", kwargs)
@@ -54,9 +62,20 @@ def mt5_orders_total() -> int:
 @mcp.tool
 def mt5_orders_get(params: OrdersGetParams) -> Any:
     """
-    Get active pending orders.
+    Get active pending orders, optionally filtered by symbol, group pattern, or ticket.
 
-    Can filter by symbol, group pattern, or ticket number.
+    Parameter precedence (only one filter is applied by MT5):
+      - If `symbol` is provided, only orders on that symbol are returned and
+        `ticket` is ignored.
+      - If `group` is provided, orders are filtered by symbol name pattern.
+      - If `ticket` is provided, the specific order is returned.
+      - If none are provided, all active orders are returned.
+
+    The `group` filter supports wildcards ('*'), comma-separated conditions, and
+    negation ('!'). Conditions are applied left-to-right (inclusions before exclusions).
+    Examples:
+        group='*GBP*'           → orders on GBP pairs
+        group='*, !*EUR*'       → all orders except EUR pairs
     """
     kwargs = filter_none(params.model_dump())
     logger.info("mt5_orders_get called with %s", kwargs)
@@ -83,9 +102,18 @@ def mt5_history_orders_total(params: HistoryOrdersTotalParams) -> int:
 @mcp.tool
 def mt5_history_orders_get(params: HistoryOrdersGetParams) -> Any:
     """
-    Get orders from history.
+    Get orders from history, filtered by date range and/or symbol group, order ticket, or position ticket.
 
-    Can filter by date range, symbol group, order ticket, or position ticket.
+    `date_from` and `date_to` (UTC, 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS') are required
+    when filtering by date range; they can be combined with `group`.
+    Use `ticket` to retrieve a single order by ticket number, or `position` to retrieve
+    all orders linked to a specific position.
+
+    The `group` filter supports wildcards ('*'), comma-separated conditions, and
+    negation ('!'). Conditions are applied left-to-right (inclusions before exclusions).
+    Examples:
+        group='*EUR*'           → history orders on EUR pairs
+        group='*, !*USD*'       → all history orders except USD pairs
     """
     raw = params.model_dump()
     kwargs: dict[str, Any] = {}
@@ -124,9 +152,18 @@ def mt5_history_deals_total(params: HistoryDealsTotalParams) -> int:
 @mcp.tool
 def mt5_history_deals_get(params: HistoryDealsGetParams) -> Any:
     """
-    Get deals from history.
+    Get deals from history, filtered by date range and/or symbol group, deal ticket, or position ticket.
 
-    Can filter by date range, symbol group, deal ticket, or position ticket.
+    `date_from` and `date_to` (UTC, 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS') are required
+    when filtering by date range; they can be combined with `group`.
+    Use `ticket` to retrieve a single deal by ticket number, or `position` to retrieve
+    all deals linked to a specific position.
+
+    The `group` filter supports wildcards ('*'), comma-separated conditions, and
+    negation ('!'). Conditions are applied left-to-right (inclusions before exclusions).
+    Examples:
+        group='*EUR*'           → history deals on EUR pairs
+        group='*, !*USD*'       → all history deals except USD pairs
     """
     raw = params.model_dump()
     kwargs: dict[str, Any] = {}

@@ -10,37 +10,7 @@ from typing import Any
 import MetaTrader5 as mt5
 
 from .logger import logger
-from .utils import mcp, mt5_to_python, filter_none
-from .schemas import InitializeParams, LoginParams
-
-
-@mcp.tool
-def mt5_initialize(params: InitializeParams) -> str:
-    """
-    Initialize connection to MetaTrader 5 terminal.
-
-    All fields on `params` are optional and map directly to `mt5.initialize`.
-    """
-    kwargs = filter_none(params.model_dump())
-
-    safe_kwargs: dict[str, Any] = dict(kwargs)
-    if "password" in safe_kwargs:
-        safe_kwargs["password"] = "***"
-    logger.info("mt5_initialize called with %s", safe_kwargs)
-
-    result = mt5.initialize(**kwargs)
-    if not result:
-        error = mt5.last_error()
-        return f"Initialization failed: {error}"
-    return "Successfully initialized MT5 connection"
-
-
-@mcp.tool
-def mt5_shutdown() -> str:
-    """Close connection to MetaTrader 5 terminal."""
-    logger.info("mt5_shutdown called")
-    mt5.shutdown()
-    return "MT5 connection closed"
+from .utils import mcp, mt5_to_python
 
 
 @mcp.tool
@@ -69,20 +39,3 @@ def mt5_account_info() -> Any:
     """Get current trading account information including balance, equity, margin, profit, etc."""
     logger.info("mt5_account_info called")
     return mt5_to_python(mt5.account_info())
-
-
-@mcp.tool
-def mt5_login(params: LoginParams) -> str:
-    """
-    Connect to a trading account using login, password, and server.
-    """
-    logger.info("mt5_login called for login=%s server=%s", params.login, params.server)
-    result = mt5.login(
-        login=params.login,
-        password=params.password,
-        server=params.server,
-    )
-    if not result:
-        error = mt5.last_error()
-        return f"Login failed: {error}"
-    return "Successfully logged in"

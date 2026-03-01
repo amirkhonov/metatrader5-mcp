@@ -14,7 +14,6 @@ from typing import Any
 import MetaTrader5 as mt5
 
 from .logger import logger
-from .utils import mcp, parse_datetime, mt5_to_python, filter_none
 from .schemas import (
     CopyRatesFromParams,
     CopyRatesFromPosParams,
@@ -25,6 +24,7 @@ from .schemas import (
     SymbolSelectParams,
     SymbolsGetParams,
 )
+from .utils import mcp, mt5_to_python, parse_datetime
 
 
 @mcp.tool
@@ -37,7 +37,21 @@ def mt5_symbols_total() -> int:
 @mcp.tool
 def mt5_symbols_get(params: SymbolsGetParams) -> Any:
     """
-    Get all available symbols or filter by group pattern (e.g., '*EUR*', 'FOREX\\\\*').
+    Get all available financial instruments from the terminal, optionally filtered by a group pattern.
+
+    If `group` is omitted, all symbols are returned.
+
+    The `group` filter supports:
+    - Wildcards: '*' matches any sequence of characters (e.g. '*EUR*', 'FOREX*').
+    - Comma-separated conditions: multiple criteria can be combined in one string.
+    - Negation: prefix a condition with '!' to exclude matching symbols.
+    - Sequential evaluation: conditions are applied left-to-right, so include
+      patterns should come before exclude patterns.
+
+    Examples:
+        group='*RU*'                      → symbols containing 'RU'
+        group='*,!*USD*,!*EUR*,!*JPY*'   → all symbols except those containing USD, EUR, or JPY
+        group='FOREX*,!*USD*'            → FOREX symbols that don't contain USD
     """
     logger.info("mt5_symbols_get called with group=%s", params.group)
     if params.group is not None:
@@ -75,10 +89,10 @@ def mt5_symbol_select(params: SymbolSelectParams) -> bool:
 @mcp.tool
 def mt5_copy_rates_from(params: CopyRatesFromParams) -> Any:
     """
-    Get historical bar data starting from a specific date.
+    Get up to `count` historical OHLCV bars for `symbol` starting at `date_from` (inclusive).
 
-    Timeframe in minutes:
-    1=M1, 5=M5, 15=M15, 30=M30, 60=H1, 240=H4, 1440=D1, 10080=W1, 43200=MN1.
+    Bars are returned in chronological order. `date_from` is treated as a UTC timestamp.
+    Use format 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS'.
     """
     logger.info(
         "mt5_copy_rates_from called for symbol=%s timeframe=%s date_from=%s count=%s",
@@ -99,7 +113,11 @@ def mt5_copy_rates_from(params: CopyRatesFromParams) -> Any:
 
 @mcp.tool
 def mt5_copy_rates_range(params: CopyRatesRangeParams) -> Any:
-    """Get historical bar data for a specific date range."""
+    """
+    Get historical OHLCV bars for `symbol` between `date_from` and `date_to` (both inclusive).
+
+    Dates are treated as UTC. Use format 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS'.
+    """
     logger.info(
         "mt5_copy_rates_range called for symbol=%s timeframe=%s date_from=%s date_to=%s",
         params.symbol,
@@ -145,10 +163,15 @@ def mt5_copy_rates_from_pos(params: CopyRatesFromPosParams) -> Any:
 @mcp.tool
 def mt5_copy_ticks_from(params: CopyTicksFromParams) -> Any:
     """
-    Get historical tick data starting from a specific date.
+    Get up to `count` historical ticks for `symbol` starting at `date_from` (inclusive, UTC).
 
-    Flags:
-    0=INFO, 2=TRADE, 4=BID, 8=ASK, 6=ALL.
+    Tick type flags (COPY_TICKS_* constants):
+      1 = ALL   - all ticks
+      2 = TRADE - ticks with Last and Volume changes
+      4 = BID   - ticks with Bid changes
+      8 = ASK   - ticks with Ask changes
+      0 = INFO  - ticks without price changes (informational)
+    Flags can be combined with bitwise OR (e.g. BID|ASK = 4|8 = 12).
     """
     logger.info(
         "mt5_copy_ticks_from called for symbol=%s date_from=%s count=%s flags=%s",
@@ -170,10 +193,15 @@ def mt5_copy_ticks_from(params: CopyTicksFromParams) -> Any:
 @mcp.tool
 def mt5_copy_ticks_range(params: CopyTicksRangeParams) -> Any:
     """
-    Get historical tick data for a specific date range.
+    Get historical ticks for `symbol` between `date_from` and `date_to` (both inclusive, UTC).
 
-    Flags:
-    0=INFO, 2=TRADE, 4=BID, 8=ASK, 6=ALL.
+    Tick type flags (COPY_TICKS_* constants):
+      1 = ALL   - all ticks
+      2 = TRADE - ticks with Last and Volume changes
+      4 = BID   - ticks with Bid changes
+      8 = ASK   - ticks with Ask changes
+      0 = INFO  - ticks without price changes (informational)
+    Flags can be combined with bitwise OR (e.g. BID|ASK = 4|8 = 12).
     """
     logger.info(
         "mt5_copy_ticks_range called for symbol=%s date_from=%s date_to=%s flags=%s",
