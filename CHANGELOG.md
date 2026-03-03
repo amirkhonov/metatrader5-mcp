@@ -1,3 +1,10 @@
+# 1.0.0 (2026-03-03)
+
+
+### Features
+
+* initial commit ([33a224a](https://github.com/amirkhonov/metatrader5-mcp/commit/33a224aa5dfa55194a40244ae9c65dc797c0f65f))
+
 # 1.0.0 (2026-03-01)
 
 
