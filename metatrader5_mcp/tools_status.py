@@ -11,16 +11,15 @@ from typing import Any
 
 import MetaTrader5 as mt5
 
+from .logger import logger
+from .utils import mcp, mt5_to_python
+
 
 def _get_package_version() -> str:
     try:
         return pkg_version("metatrader5-mcp")
     except Exception:
         return "unknown"
-
-
-from .logger import logger
-from .utils import mcp, mt5_to_python
 
 
 @mcp.tool
